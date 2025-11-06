@@ -15,7 +15,6 @@ public class GerenteFinanceiro {
     static ArrayList<Double> values = new ArrayList<>();
     static ArrayList<String> history = new ArrayList<>();
     static ArrayList<LocalDate> trcDate = new ArrayList<>();
-    static int maxTsc = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -52,10 +51,10 @@ public class GerenteFinanceiro {
                 getBalance();
                 break;
             case 4:
-                getHistory(scanner);
+                getHistory();
                 break;
             case 5:
-                getTypeSummary(scanner);
+                getTypeSummary();
                 break;
             case 6:
                 generateReport();
@@ -123,7 +122,7 @@ public class GerenteFinanceiro {
         history.add("[" + date + "] " + type + " | " + category + " | R$" + value + " | " + description);
     }
 
-    public static void getHistory(Scanner scanner) {
+    public static void getHistory() {
         System.out.printf("%n%nHISTÓRICO DE TRANSAÇÕES %n");
 
         for (int i = 0; i < values.size(); i++) {
@@ -134,7 +133,7 @@ public class GerenteFinanceiro {
         getBalance();
     }
 
-    public static void getTypeSummary(Scanner scanner) {
+    public static void getTypeSummary() {
 
         double incomeTr = 0;
         double expenseTr = 0;
