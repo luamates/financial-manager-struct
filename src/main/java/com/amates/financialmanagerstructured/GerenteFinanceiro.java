@@ -3,6 +3,9 @@ package com.amates.financialmanagerstructured;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class GerenteFinanceiro {
 
@@ -11,6 +14,7 @@ public class GerenteFinanceiro {
     static ArrayList<String> descriptions = new ArrayList<>();
     static ArrayList<Double> values = new ArrayList<>();
     static ArrayList<String> history = new ArrayList<>();
+    static ArrayList<LocalDate> trcDate = new ArrayList<>();
     static int maxTsc = 0;
 
     static void main() {
@@ -26,11 +30,11 @@ public class GerenteFinanceiro {
     public static boolean mainMenu(Scanner scanner) {
 
         System.out.printf("%n%n===== GERENTE FINANCEIRO =====%n");
-        System.out.printf("1 - Adicionar Receita%n");
-        System.out.printf("2 - Adicionar Despesa%n");
-        System.out.printf("3 - Consultar Saldo Atual%n");
-        System.out.printf("4 - Consultar Histórico de Transações%n");
-        System.out.printf("5 - Consultar Total por Categoria%n");
+        System.out.printf("1 - Adicionar receita%n");
+        System.out.printf("2 - Adicionar despesa%n");
+        System.out.printf("3 - Consultar saldo atual%n");
+        System.out.printf("4 - Consultar histórico de transações%n");
+        System.out.printf("5 - Consultar por tipo de transação%n");
         System.out.printf("6 - Gerar relatório em arquivo%n");
         System.out.printf("7 - Sair%n");
         System.out.printf("%nSua seleção: ");
@@ -45,13 +49,13 @@ public class GerenteFinanceiro {
                 addExpense(scanner);
                 break;
             case 3:
-                getBalance(scanner);
+                getBalance();
                 break;
             case 4:
                 getHistory(scanner);
                 break;
             case 5:
-                getCategorySummary(scanner);
+                getTypeSummary(scanner);
                 break;
             case 6:
                 generateReport();
@@ -86,55 +90,76 @@ public class GerenteFinanceiro {
             return;
         }
 
-        if (type.equals("DESPESA")) {
-            values.add(-value);
-            types.add(type);
-        } else {
-            values.add(value);
-            types.add(type);
-        }
+        if (type.equals("DESPESA")) values.add(-value);
+        else values.add(value);
+
+        types.add(type);
+        LocalDate insertDate = LocalDate.now();
+        trcDate.add(insertDate);
 
         System.out.printf("%nDigite a categoria: ");
-        categories.add(scanner.nextLine());
+        categories.add(scanner.next());
 
         System.out.printf("%nDigite uma descrição: ");
-        descriptions.add(scanner.nextLine());
+        descriptions.add(scanner.next());
 
         int added = values.size() - 1;
-        addToHistory(LocalDate.now(), types.get(added), categories.get(added), values.get(added), descriptions.get(added));
+        addToHistory(insertDate, types.get(added), categories.get(added), values.get(added), descriptions.get(added));
 
         System.out.printf("%nTransação adicionada com sucesso!");
     }
 
+    public static void getBalance() {
+        double balance = 0;
 
+        for (Double value : values) {
+            balance += value;
+        }
 
-
-    public static void getBalance(Scanner scanner) {
-
-
-
+        System.out.printf("%n-> O saldo atual é R$ %.2f%n", balance);
     }
 
     public static void addToHistory(LocalDate date, String type, String category, double value, String description) {
-        history.add("[" + date + "] " + type + " | " + category + " | " + value + " | " + description + "%n");
+        history.add("[" + date + "] " + type + " | " + category + " | R$" + value + " | " + description);
     }
-
 
     public static void getHistory(Scanner scanner) {
+        System.out.printf("%n%nHISTÓRICO DE TRANSAÇÕES %n");
 
+        for (int i = 0; i < values.size(); i++) {
+            System.out.printf("%s %n", history.get(i));
+        }
 
+        System.out.printf("%n%n--------------------");
+        getBalance();
     }
 
+    public static void getTypeSummary(Scanner scanner) {
 
-    public static void getCategorySummary(Scanner scanner) {
+        double incomeTr = 0;
+        double expenseTr = 0;
 
-
+        for (Double value : values) {
+            if (value < 0) expenseTr += value;
+            else incomeTr += value;
+        }
+        System.out.printf("%n%nSALDO POR TIPO %nTotal em receitas: R$%.2f %nTotal em despesas: R$%.2f%n", incomeTr, expenseTr);
     }
 
     public static void generateReport() {
+        String filePath = "history.txt";
+        StringBuilder content = new StringBuilder();
 
+        for (int i = 0; i < values.size(); i++) {
+            content.append(history.get(i));
+            content.append("\n");
+        }
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(content.toString());
+            System.out.printf("%nHistórico adicionado com sucesso ao arquivo: %s", filePath);
+        } catch (IOException e) {
+            System.err.printf("%nErro ao escrever no arquivo. Erro: %s", e.getMessage());
+        }
     }
-
-
 }
