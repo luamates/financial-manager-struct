@@ -17,7 +17,7 @@ public class GerenteFinanceiro {
     static ArrayList<LocalDate> trcDate = new ArrayList<>();
     static int maxTsc = 0;
 
-    static void main() {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean continueMenu = true;
 
