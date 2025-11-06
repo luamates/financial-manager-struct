@@ -1,5 +1,6 @@
 package com.amates.financialmanagerstructured;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,7 +10,6 @@ public class GerenteFinanceiro {
     static ArrayList<String> categories = new ArrayList<>();
     static ArrayList<String> descriptions = new ArrayList<>();
     static ArrayList<Double> values = new ArrayList<>();
-    static ArrayList<String> dates = new ArrayList<>();
     static ArrayList<String> history = new ArrayList<>();
     static int maxTsc = 0;
 
@@ -66,22 +66,56 @@ public class GerenteFinanceiro {
     }
 
     public static void addIncome(Scanner scanner) {
+        System.out.printf("%n%nINSERIR RECEITA");
+        System.out.printf("%nDigite o valor da receita: ");
 
-
+        setGeneralData(scanner, scanner.nextDouble(), "RECEITA");
     }
-
 
     public static void addExpense(Scanner scanner) {
+        System.out.printf("%n%nINSERIR DESPESA");
+        System.out.printf("%nDigite o valor da despesa: ");
 
-
+        setGeneralData(scanner, scanner.nextDouble(), "DESPESA");
     }
+
+    public static void setGeneralData(Scanner scanner, double value, String type) {
+
+        if (value <= 0) {
+            System.out.printf("%n%nO valor precisa ser maior que zero!");
+            return;
+        }
+
+        if (type.equals("DESPESA")) {
+            values.add(-value);
+            types.add(type);
+        } else {
+            values.add(value);
+            types.add(type);
+        }
+
+        System.out.printf("%nDigite a categoria: ");
+        categories.add(scanner.nextLine());
+
+        System.out.printf("%nDigite uma descrição: ");
+        descriptions.add(scanner.nextLine());
+
+        int added = values.size() - 1;
+        addToHistory(LocalDate.now(), types.get(added), categories.get(added), values.get(added), descriptions.get(added));
+
+        System.out.printf("%nTransação adicionada com sucesso!");
+    }
+
+
+
 
     public static void getBalance(Scanner scanner) {
 
 
+
     }
 
-    public static void addToHistory(String date, String type, String category, double value, String description) {
+    public static void addToHistory(LocalDate date, String type, String category, double value, String description) {
         history.add("[" + date + "] " + type + " | " + category + " | " + value + " | " + description + "%n");
     }
 
